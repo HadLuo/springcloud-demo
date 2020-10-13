@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PlayInfoMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PlayInfo">
+    <id column="play_id" jdbcType="INTEGER" property="playId" />
+    <result column="play_type" jdbcType="TINYINT" property="playType" />
+    <result column="play_keyword_rule" jdbcType="VARCHAR" property="playKeywordRule" />
+    <result column="play_name" jdbcType="VARCHAR" property="playName" />
+    <result column="play_time" jdbcType="INTEGER" property="playTime" />
+    <result column="robot_num" jdbcType="INTEGER" property="robotNum" />
+    <result column="content_num" jdbcType="INTEGER" property="contentNum" />
+    <result column="group_num" jdbcType="INTEGER" property="groupNum" />
+    <result column="push_time_type" jdbcType="TINYINT" property="pushTimeType" />
+    <result column="push_time" jdbcType="TIMESTAMP" property="pushTime" />
+    <result column="push_target_type" jdbcType="TINYINT" property="pushTargetType" />
+    <result column="push_target_id" jdbcType="VARCHAR" property="pushTargetId" />
+    <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="create_id" jdbcType="VARCHAR" property="createId" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="modify_id" jdbcType="VARCHAR" property="modifyId" />
+    <result column="modify_name" jdbcType="VARCHAR" property="modifyName" />
+    <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
+    <result column="is_start" jdbcType="TINYINT" property="isStart" />
+    <result column="is_scan" jdbcType="TINYINT" property="isScan" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    play_id, play_type, play_keyword_rule, play_name, play_time, robot_num, content_num, 
+    group_num, push_time_type, push_time, push_target_type,push_target_id, state, create_id, create_name,
+    create_time, modify_time, modify_id, modify_name, is_delete, is_start,is_scan
+  </sql>
+
+  <select id="selectListTimeUp" resultMap="BaseResultMap">
+	    SELECT
+          play_id
+		FROM
+			t_play_info
+		WHERE
+			is_delete = 0
+		AND play_type = 1
+		AND push_time_type = 2
+		AND (state = 1 or state = 2)
+		AND push_time <![CDATA[<=]]> now()
+		AND is_scan=0
+  </select>
+  
+  <select id="selectKeyWordsTimeUp" resultMap="BaseResultMap">
+	    SELECT
+			*
+		FROM
+			t_play_info
+		WHERE
+			state = 1
+		AND play_type = 2
+		AND is_delete = 0
+		and (state=1 or state=2)
+  </select>
+
+  <sql id="timingPlayPageConditionSql">
+    <where>
+      <if test="playState != null">
+        and state = #{playState}
+      </if>
+      <if test="playName != null">
+        <bind name="playNameLike" value="'%' + playName + '%'"/>
+        and play_name like #{playNameLike}
+      </if>
+      <if test="pushStartTime != null">
+        and push_time >= #{pushStartTime}
+      </if>
+      <if test="pushEndTime != null">
+        and push_time <![CDATA[<]]> DATE_ADD(#{pushEndTime},INTERVAL 1 DAY)
+      </if>
+      and create_id = #{createId} and play_type = 1 and is_delete = 0
+    </where>
+  </sql>
+
+  <select id="selectTimingPlayPageCount" resultType="java.lang.Integer">
+    SELECT count(0)
+    from t_play_info
+    <include refid="timingPlayPageConditionSql"/>
+  </select>
+  <select id="selectTimingPlayPage" resultType="com.uc.firegroup.api.pojo.PlayInfo">
+    select <include refid="Base_Column_List"/>
+    from t_play_info
+    <include refid="timingPlayPageConditionSql"/>
+    order by create_time desc
+    limit ${(page-1)*rows},${rows}
+  </select>
+
+  <sql id="triggerPlayPageConditionSql">
+    <where>
+      <if test="triggerState != null">
+        and is_start = #{triggerState}
+      </if>
+      <if test="playName != null">
+        <bind name="playNameLike" value="'%' + playName + '%'"/>
+        and play_name like #{playNameLike}
+      </if>
+      and create_id = #{createId} and play_type = 2 and is_delete = 0
+    </where>
+  </sql>
+
+  <select id="selectTriggerPlayPageCount" resultType="java.lang.Integer">
+    SELECT count(0)
+    from t_play_info
+    <include refid="triggerPlayPageConditionSql"/>
+  </select>
+  <select id="selectTriggerPlayPage" resultType="com.uc.firegroup.api.pojo.PlayInfo">
+    select <include refid="Base_Column_List"/>
+    from t_play_info
+    <include refid="triggerPlayPageConditionSql"/>
+    order by create_time desc
+    limit ${(page-1)*rows},${rows}
+  </select>
+</mapper>

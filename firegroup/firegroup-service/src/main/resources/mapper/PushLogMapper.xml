@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PushLogMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PushLog">
+      <id column="id" jdbcType="INTEGER" property="id" />
+      <result column="play_id" jdbcType="INTEGER" property="playId" />
+      <result column="robot_wx_id" jdbcType="VARCHAR" property="robotWxId" />
+      <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+      <result column="play_message_id" jdbcType="INTEGER" property="playMessageId" />
+      <result column="push_state" jdbcType="INTEGER" property="pushState" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="push_error_msg" jdbcType="VARCHAR" property="pushErrorMsg" />
+    <result column="person_name" jdbcType="VARCHAR" property="personName" />
+    <result column="merchat_id" jdbcType="VARCHAR" property="merchatId" />
+  </resultMap>
+  
+    <select id="selectLastLog" resultMap="BaseResultMap" >
+	    SELECT
+			*
+		FROM
+			t_push_log
+		WHERE
+			play_id = #{playId}
+		AND group_id = #{groupId}
+		order by create_time desc limit 1
+  </select>
+  
+    <select id="selectLogByNickName" resultMap="BaseResultMap" >
+	    SELECT
+			*
+		FROM
+			t_push_log
+		WHERE
+			play_id = #{playId}
+		AND group_id = #{groupId}
+		AND person_name = #{nickName} limit 1
+  </select>
+  
+  
+  <select id="selectCountByPlayId" resultType="java.lang.Integer" >
+	   SELECT
+			count(1)
+		FROM
+			t_push_log
+		WHERE
+			play_id = #{playId}
+			and (push_state = 2 or push_state = 1)
+  </select>
+
+</mapper>

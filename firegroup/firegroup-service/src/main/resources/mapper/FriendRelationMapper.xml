@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.FriendRelationMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.FriendRelation">
+      <id column="friend_relation_id" property="friendRelationId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="from_wx_id" property="fromWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="to_wx_id" property="toWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="create_time" property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="is_delete" property="isDelete" javaType="Integer" jdbcType="TINYINT" />
+      <result column="modify_time" property="modifyTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    friend_relation_id, from_wx_id, to_wx_id, create_time, is_delete, modify_time
+  </sql>
+    <delete id="deleteByFromWxIds">
+        update t_friend_relation set is_delete = 1 where from_wx_id in <foreach collection="list" open="(" item="item" separator="," close=")">#{item}</foreach> and is_delete = 0
+    </delete>
+    <delete id="deleteByToWxIds">
+        update t_friend_relation set is_delete = 1 where to_wx_id in <foreach collection="list" open="(" item="item" separator="," close=")">#{item}</foreach> and is_delete = 0
+    </delete>
+
+    <select id="selectRelationForWxId" resultMap="BaseResultMap">
+    select  <include refid="Base_Column_List" />
+    from t_friend_relation where is_delete = 0  and from_wx_id = #{fromWxId} and to_wx_id = #{toWxId}
+  </select>
+
+    <select id="selectRelationAllByWxId" resultMap="BaseResultMap">
+        select  <include refid="Base_Column_List" />
+        from t_friend_relation where is_delete = 0  and (from_wx_id = #{wxId} or to_wx_id = #{wxId})
+    </select>
+    <select id="findRelationListByWxIds" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_friend_relation
+        where is_delete = 0 and to_wx_id in <foreach collection="list" open="(" close=")" separator="," item="item">#{item}</foreach>
+        union all
+        select <include refid="Base_Column_List" />
+        from t_friend_relation
+        where is_delete = 0 and from_wx_id in <foreach collection="list" open="(" close=")" separator="," item="item">#{item}</foreach>
+    </select>
+</mapper>

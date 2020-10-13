@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.RobotGroupRelationMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.RobotGroupRelation">
+      <id column="robot_group_relation_id"  property="robotGroupRelationId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="robot_wx_id" property="robotWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="wx_group_id"  property="wxGroupId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="robot_group_name"  property="robotGroupName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="income_group_time" property="incomeGroupTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="out_group_time" property="outGroupTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="state" property="state" javaType="Integer" jdbcType="TINYINT" />
+      <result column="create_time" property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="modify_time"  property="modifyTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="is_delete" property="isDelete" javaType="Integer" jdbcType="TINYINT" />
+  </resultMap>
+    <resultMap id="resultMap" type="com.uc.firegroup.api.response.RobotInfoGroupResponse">
+        <id column="robot_id"  property="robotId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+        <result column="wx_id" property="robotWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="wx_group_id"  property="groupWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="income_group_time" property="incomeGroupTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+        <result column="out_group_time" property="outGroupTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+        <result column="state" property="robotGroupState" javaType="Integer" jdbcType="TINYINT" />
+        <result column="wx_nick"  property="robotNick" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="head_image"  property="headImage" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="wx_acc"  property="robotWxAcc" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="login_state"  property="loginState" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </resultMap>
+
+  <sql id="Base_Column_List">
+    robot_group_relation_id, robot_wx_id, wx_group_id, robot_group_name, income_group_time,
+    out_group_time, state, create_time, modify_time, is_delete
+  </sql>
+  <select id="selectCountByWxIdDate" resultType="java.lang.Integer">
+    select count(*) from t_robot_group_relation where
+    is_delete = 0 and state = 1 and robot_wx_id = #{wxId} and
+    income_group_time >= #{beginDate} and #{endDate} >income_group_time
+  </select>
+
+    <select id="selectCountByWxIdGroupId" resultType="java.lang.Integer">
+    select count(*) from t_robot_group_relation where
+    is_delete = 0 and state = 1 and robot_wx_id = #{wxId} and wx_group_id = #{wxGroupId}
+  </select>
+
+    <select id="selectByWxIdGroupId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+     from t_robot_group_relation where
+    is_delete = 0 and state = 1 and robot_wx_id = #{wxId} and wx_group_id = #{wxGroupId}
+  </select>
+
+    <select id="selectRobotCountByGroupId" resultType="java.lang.Integer">
+    select count(*) from t_robot_group_relation where
+    is_delete = 0 and wx_group_id = #{wxGroupId} and  state = 1
+  </select>
+
+    <select id="selectRobotByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select <include refid="Base_Column_List" />
+    from t_robot_group_relation where
+    is_delete = 0 and state = 1 and wx_group_id = #{wxGroupId} order by robot_group_relation_id
+  </select>
+
+    <select id="selectGroupCountByRobotId" resultType="java.lang.Integer">
+        select count(*)
+        from t_robot_group_relation where
+        is_delete = 0 and state = 1 and robot_wx_id = #{robotWxId}
+    </select>
+
+    <select id="selectRobotAllByGroupId" resultMap="resultMap" parameterType="com.uc.firegroup.api.request.RobotInfoGroupRequest">
+        select g.robot_id,g.wx_id,r.wx_group_id,r.income_group_time,r.out_group_time,r.state,g.wx_nick,
+        g.head_image,g.wx_acc,g.login_state
+        from t_robot_group_relation  r inner join t_robot_info g on r.robot_wx_id = g.wx_id where
+        r.is_delete = 0  and r.wx_group_id = #{wxGroupId} and g.state = 0 and r.income_group_time >= #{createTime}
+        <if test="robotNick != null and robotNick != ''">
+            and  g.wx_nick LIKE CONCAT('%',#{robotNick},'%')
+        </if>
+        <if test="loginState != null and loginState != '' ">
+            and  g.login_state = #{loginState}
+        </if>
+        <if test="robotGroupState != null and robotGroupState != ''">
+            and  r.state = #{robotGroupState}
+        </if>
+       order by income_group_time desc limit ${(pageIndex-1)*pageSize},${pageSize}
+    </select>
+
+    <select id="selectRobotAllByGroupIdCount" resultType="java.lang.Integer" parameterType="com.uc.firegroup.api.request.RobotInfoGroupRequest">
+        select  count(*)
+        from t_robot_group_relation  r inner join t_robot_info g on r.robot_wx_id = g.wx_id where
+        r.is_delete = 0  and r.wx_group_id = #{wxGroupId} and g.state = 0 and r.income_group_time >= #{createTime}
+        <if test="robotNick != null and robotNick != ''">
+            and  g.wx_nick LIKE CONCAT('%',#{robotNick},'%')
+        </if>
+        <if test="loginState != null and loginState != '' ">
+            and  g.login_state = #{loginState}
+        </if>
+        <if test="robotGroupState != null and robotGroupState != ''">
+            and  r.state = #{robotGroupState}
+        </if>
+    </select>
+
+    <select id="selectRobotByName" resultMap="resultMap" parameterType="com.uc.firegroup.api.request.RobotInfoGroupRequest">
+        select g.robot_id,g.wx_id,r.wx_group_id,r.income_group_time,r.out_group_time,r.state,g.wx_nick,
+        g.head_image,g.wx_acc,g.login_state
+        from t_robot_group_relation  r inner join t_robot_info g on r.robot_wx_id = g.wx_id where
+        r.is_delete = 0  and r.wx_group_id = #{wxGroupId} and  r.state = 1 and g.state = 0
+        <if test="robotNick != null and robotNick != ''">
+            and  g.wx_nick LIKE CONCAT('%',#{robotNick},'%')
+        </if>
+        <if test="loginState != null and loginState != ''">
+            and  g.login_state = #{loginState}
+        </if>
+        order by income_group_time desc
+    </select>
+
+    <select id="selectWaitGroup" resultMap="BaseResultMap">
+        select  distinct robot_wx_id,wx_group_id,state,robot_group_relation_id
+        from t_robot_group_relation where is_delete = 0 and state = 3 order by  robot_group_relation_id  desc limit 20
+    </select>
+
+    <select id="selectGroupByRobotId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select distinct wx_group_id,robot_wx_id,robot_group_relation_id,state
+        from t_robot_group_relation where robot_wx_id  = #{robotWxId} and state = 1 and is_delete = 0
+    </select>
+
+    <update id="updateStateByRobotId" >
+        update t_robot_group_relation set state = 2,out_group_time = now() where robot_wx_id  = #{robotWxId}
+    </update>
+</mapper>

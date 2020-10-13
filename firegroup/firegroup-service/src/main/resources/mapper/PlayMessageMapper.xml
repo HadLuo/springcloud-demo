@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PlayMessageMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PlayMessage">
+    <id column="play_message_id" jdbcType="INTEGER" property="playMessageId" />
+    <result column="play_id" jdbcType="INTEGER" property="playId" />
+    <result column="robot_nickname" jdbcType="VARCHAR" property="robotNickname" />
+    <result column="message_sort" jdbcType="INTEGER" property="messageSort" />
+    <result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+    <result column="interval_time" jdbcType="INTEGER" property="intervalTime" />
+    <result column="play_error_type" jdbcType="TINYINT" property="playErrorType" />
+    <result column="call_all" jdbcType="TINYINT" property="callAll" />
+    <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    play_message_id, play_id, robot_nickname, message_sort, message_content, interval_time, 
+    play_error_type, call_all, is_delete, create_time, modify_time
+  </sql>
+
+    <delete id="deleteByPlayId">
+      delete from t_play_message
+      where play_id = #{playId}
+    </delete>
+
+    <select id="selectListByPlayId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_play_message
+    where play_id = #{playId}
+  </select>
+</mapper>

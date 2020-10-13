@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PlayMessagePushDetailMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PlayMessagePushDetail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="play_msg_push_id" jdbcType="INTEGER" property="playMsgPushId" />
+    <result column="robot_nickname" jdbcType="VARCHAR" property="robotNickname" />
+    <result column="wx_id" jdbcType="VARCHAR" property="wxId" />
+    <result column="wx_acc" jdbcType="VARCHAR" property="wxAcc" />
+    <result column="wx_nickname" jdbcType="VARCHAR" property="wxNickname" />
+    <result column="wx_img_url" jdbcType="VARCHAR" property="wxImgUrl" />
+    <result column="acc_source" jdbcType="TINYINT" property="accSource" />
+    <result column="call_all" jdbcType="TINYINT" property="callAll" />
+    <result column="interval_time" jdbcType="INTEGER" property="intervalTime" />
+    <result column="play_error_type" jdbcType="TINYINT" property="playErrorType" />
+    <result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+    <result column="message_sort" jdbcType="INTEGER" property="messageSort" />
+    <result column="send_state" jdbcType="TINYINT" property="sendState" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, play_msg_push_id, robot_nickname, wx_id,wx_acc, wx_nickname, wx_img_url, acc_source,
+    call_all, interval_time, play_error_type, message_content, message_sort, send_state, 
+    create_time, modify_time, is_delete
+  </sql>
+  <select id="selectListByPushId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_play_message_push_detail
+    where play_msg_push_id = #{playMsgPushId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectFinishCountByPushId" resultType="java.lang.Integer">
+    select count(0) from t_play_message_push_detail where play_msg_push_id = #{pushId} and send_state = 1
+  </select>
+
+  <insert id="batchInsert" parameterType="com.uc.firegroup.api.pojo.PlayMessagePushDetail">
+    insert into t_play_message_push_detail (play_msg_push_id, robot_nickname,
+    call_all, interval_time,
+    play_error_type, message_content, message_sort,
+    send_state)
+    values
+    <foreach collection="list" separator="," item="item">
+      (#{item.playMsgPushId,jdbcType=INTEGER}, #{item.robotNickname,jdbcType=VARCHAR},
+      #{item.callAll,jdbcType=TINYINT}, #{item.intervalTime,jdbcType=INTEGER},
+      #{item.playErrorType,jdbcType=TINYINT}, #{item.messageContent,jdbcType=VARCHAR}, #{item.messageSort,jdbcType=INTEGER},
+      #{item.sendState,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+</mapper>

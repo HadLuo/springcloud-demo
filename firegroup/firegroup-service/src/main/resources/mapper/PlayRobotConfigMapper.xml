@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PlayRobotConfigMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PlayRobotConfig">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="play_id" jdbcType="INTEGER" property="playId" />
+    <result column="robot_nickname" jdbcType="VARCHAR" property="robotNickname" />
+    <result column="robot_config_type" jdbcType="TINYINT" property="robotConfigType" />
+    <result column="clear_wx_id" jdbcType="VARCHAR" property="clearWxId" />
+    <result column="backup_wx_id" jdbcType="VARCHAR" property="backupWxId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, play_id, robot_nickname, robot_config_type, clear_wx_id, backup_wx_id, create_time, 
+    modify_time, is_delete
+  </sql>
+
+  <delete id="deleteByPlayId">
+    delete from t_play_robot_config
+    where play_id = #{playId,jdbcType=INTEGER}
+  </delete>
+  <select id="selectListByPlayId" resultType="com.uc.firegroup.api.pojo.PlayRobotConfig">
+    select <include refid="Base_Column_List"/>
+    from t_play_robot_config
+    where play_id = #{playId}
+  </select>
+</mapper>

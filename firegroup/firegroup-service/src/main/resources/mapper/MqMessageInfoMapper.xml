@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.MqMessageInfoMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.MqMessageInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="message_type" jdbcType="INTEGER" property="messageType" />
+    <result column="message_req" jdbcType="VARCHAR" property="messageReq" />
+    <result column="message_res" jdbcType="VARCHAR" property="messageRes" />
+    <result column="message_state" jdbcType="TINYINT" property="messageState" />
+    <result column="callback_time" jdbcType="TIMESTAMP" property="callbackTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="send_wx_Id" jdbcType="VARCHAR" property="sendWxId" />
+    <result column="req_group_id" jdbcType="VARCHAR" property="reqGroupId" />
+    <result column="message_opt_id" jdbcType="VARCHAR" property="messageOptId" />
+    <result column="callback_info" jdbcType="VARCHAR" property="callbackInfo" />
+    <result column="to_wx_id" jdbcType="VARCHAR" property="toWxId" />
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, message_type, message_req, message_res, message_state, callback_time, create_time, 
+    send_wx_Id, req_group_id,message_opt_id,callback_info,to_wx_id
+  </sql>
+
+  <select id="selectInfoByOptId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from t_mq_message_info where message_opt_id = #{messageOptId}
+  </select>
+
+  <select id="selectInfoByPullWxId" parameterType="com.uc.firegroup.api.request.PullMqLogRequest" resultMap="BaseResultMap">
+    select * from t_mq_message_info where to_wx_id = #{toWxId} and send_wx_Id = #{sendWxId} and req_group_id = #{reqGroupId} and message_state = 1 and message_type = 4505
+    order by create_time desc limit 1
+   </select>
+</mapper>

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: firegroup
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_CONFIG_ADDR}
+        metadata:
+          version: V1.0.0
+      config:
+        server-addr: ${NACOS_CONFIG_ADDR}
+        #shared-dataids: neighbour_plat_db.yml,redis.yml,neighbour_sms.yml
+        shared-dataids: firegroup.yml
+        # 配置 自动刷新
+        refreshable-dataids: firegroup-env.properties
+  main:
+    allow-bean-definition-overriding: true
+        

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.RobotInfoMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.RobotInfo">
+      <id column="robot_id" property="robotId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="wx_id" property="wxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="friend_num" property="friendNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="state"  property="state" javaType="Integer" jdbcType="TINYINT" />
+      <result column="head_image"  property="headImage" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="merchant_id"  property="merchantId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="wx_acc"  property="wxAcc" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="wx_nick"  property="wxNick" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="group_num" property="groupNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="login_state" property="loginState" javaType="java.lang.Integer" jdbcType="TINYINT" />
+      <result column="update_batch_id" property="updateBatchId" javaType="java.lang.Long" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    robot_id, wx_id, friend_num, state, head_image, merchant_id,
+    wx_acc, wx_nick,group_num,login_state
+  </sql>
+    <insert id="batchInsert" parameterType="com.uc.firegroup.api.pojo.RobotInfo">
+        insert into t_robot_info(wx_id,head_image,merchant_id,wx_acc,wx_nick,login_state,update_batch_id)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{item.wxId}, #{item.headImage},
+            #{item.merchantId}, #{item.wxAcc},
+            #{item.wxNick}, #{item.loginState}, #{item.updateBatchId})
+        </foreach>
+    </insert>
+
+    <update id="deleteByWxIds" parameterType="list">
+        update t_robot_info
+        set state = 1
+        where wx_id in
+        <foreach collection="list" open="(" separator="," close=")" item="item">
+            #{item}
+        </foreach>
+    </update>
+    <update id="decrFriendNum">
+        update t_robot_info
+        set friend_num = friend_num-#{num}
+        where wx_id = #{wxId}
+    </update>
+
+    <select id="queryRobotList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select     <include refid="Base_Column_List" />
+    from t_robot_info where state = 0 and #{num} > friend_num order by friend_num,robot_id
+  </select>
+
+  <select id="selectRobotByWxId" resultMap="BaseResultMap" parameterType="java.lang.String">
+   select     <include refid="Base_Column_List" />
+    from t_robot_info where state = 0 and wx_id = #{wxId} limit 1
+  </select>
+
+  <select id="selectRobotByWxAcc" resultMap="BaseResultMap" parameterType="java.lang.String">
+   select     <include refid="Base_Column_List" />
+    from t_robot_info where state = 0 and wx_acc = #{wxAcc} limit 1
+  </select>
+
+  <select id="queryRobotListAll" resultMap="BaseResultMap" >
+   select     <include refid="Base_Column_List" />
+    from t_robot_info where state = 0
+  </select>
+
+  <select id="selectRobotByGroup" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select     <include refid="Base_Column_List" />
+    from t_robot_info where state = 0  and login_state != 3 and #{num} > group_num order by group_num,robot_id
+  </select>
+
+    <select id="updateGroupNum">
+        update t_robot_info set group_num = group_num + #{groupNum} WHERE robot_id = #{robotId}
+    </select>
+</mapper>

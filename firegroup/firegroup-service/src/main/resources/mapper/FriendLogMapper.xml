@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.FriendLogMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.FriendLog">
+      <id column="friend_log_id" property="friendLogId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="friend_date" property="friendDate" javaType="java.util.Date" jdbcType="DATE" />
+      <result column="from_add_num" property="fromAddNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="from_added_num" property="fromAddedNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="from_wx_id" property="fromWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="to_wx_id" property="toWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="to_add_num" property="toAddNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="to_added_num" property="toAddedNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="from_days" property="fromDays" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="to_days" property="toDays" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="state" property="state" javaType="Integer" jdbcType="TINYINT" />
+      <result column="create_time" property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="modify_time" property="modifyTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    friend_log_id, friend_date, from_add_num, from_added_num, from_wx_id, to_wx_id, to_add_num, 
+    to_added_num, from_days, to_days, state, create_time, modify_time
+  </sql>
+
+  <select id="selectFriendLogFromByDay" parameterType="com.uc.firegroup.api.request.FriendLogRequest" resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_friend_log where friend_date = #{friendDate} and from_wx_id = #{wxId} and state != 3 order by friend_log_id desc limit 1
+  </select>
+
+  <select id="selectFriendLogToByDay" parameterType="com.uc.firegroup.api.request.FriendLogRequest" resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_friend_log where friend_date = #{friendDate} and to_wx_id = #{wxId} and state != 3 order by friend_log_id desc limit 1
+  </select>
+
+  <select id="selectFriendLogAllByDay" parameterType="com.uc.firegroup.api.request.FriendLogRequest" resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_friend_log where friend_date = #{friendDate} and (to_wx_id = #{wxId} or from_wx_id = #{wzId}) and state != 3 order by friend_log_id desc limit 1
+  </select>
+
+  <select id="selectTodayCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(*) from t_friend_log where friend_date = #{friendDate}  and state != 3
+  </select>
+
+  <select id="selectOneLogByWxId" resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_friend_log where from_wx_id = #{fromWxId}  and  to_wx_id = #{toWxId} and state != 3 order by friend_log_id  desc limit 1
+  </select>
+</mapper>

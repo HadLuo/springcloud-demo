@@ -1,0 +1,59 @@
+{
+  "contentNum": 2,
+  "messages": [
+    {
+      "callAll": 0,
+      "intervalTime": 10,
+      "messageContentObj": {
+        "momentTypeId": 2001,
+        "smateContent": "我是大傻逼"
+      },
+      "messageSort": 1,
+      "playErrorType": 2,
+      "robotNickname": "发言人1"
+    },
+    {
+      "callAll": 0,
+      "intervalTime": 6,
+      "messageContentObj": {
+        "momentTypeId": 2001,
+        "smateContent": "我是东条英机"
+      },
+      "messageSort": 2,
+      "playErrorType": 1,
+      "robotNickname": "发言人2"
+    }
+  ],
+  "playKeywordRule": {
+    "delaySecond": 10,
+    "endTime": "2020-09-18T03:43:21.771Z",
+    "searchs": [
+      {
+        "type": 0,
+        "words": "大傻逼"
+      }
+    ],
+    "startTime": "2020-09-18T03:43:21.771Z"
+  },
+  "playName": "HadLuo剧本测试1",
+  "playRobotConfigs": [
+    {
+      "backupWxId": "07DE458DA41C3752AD0E5A8758D911EC,00BEA953AAF388CC29C85AD465C7C046",
+      "clearWxId": "",
+      "robotConfigType": 3,
+      "robotNickname": "发言人1"
+    },
+ 	{
+      "backupWxId": "A014AB9CF1ADDFDD24A4EF8943948B1C,00BEA953AAF388CC29C85AD465C7C046",
+      "clearWxId": "D409EC636AE8CF7E8CDB76D558D884BB",
+      "robotConfigType": 1,
+      "robotNickname": "发言人2"
+    }
+  ],
+  "playTime": 100,
+  "playType": 1,
+  "pushTargetId": "7306F139ACC799B120A7C57CFB74D267,28B0CFD34BA46B87B92B10BB49DFC77C",
+  "pushTargetType": 2,
+  "pushTime": "2020-09-18T03:43:21.771Z",
+  "pushTimeType": 2
+}

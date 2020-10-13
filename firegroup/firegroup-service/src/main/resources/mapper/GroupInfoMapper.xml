@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.GroupInfoMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.GroupInfo">
+      <id column="group_id"  property="groupId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="wx_group_id" property="wxGroupId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="wx_group_name" property="wxGroupName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="task_id" property="taskId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="state"  property="state" javaType="java.lang.Integer" jdbcType="TINYINT" />
+      <result column="is_delete" property="isDelete" javaType="Integer" jdbcType="TINYINT" />
+      <result column="create_time" property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="modify_time" property="modifyTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="groups" property="groups" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="group_type" property="groupType" javaType="java.lang.Integer" jdbcType="TINYINT" />
+      <result column="group_name" property="groupName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="robot_num" property="robotNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="last_buy_robot_num" property="lastBuyRobotNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="last_del_robot_num" property="lastDelRobotNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="open_robot_wx_id" property="openRobotWxId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="pause_time" property="pauseTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <resultMap id="resultMap" type="com.uc.firegroup.api.response.GroupAllByMerchantRequest">
+        <id column="group_id"  property="groupId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+        <result column="wx_group_id" property="wxGroupId" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="wx_group_name" property="wxGroupName" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <result column="task_id" property="taskId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+        <result column="group_type" property="groupType" javaType="java.lang.Integer" jdbcType="TINYINT" />
+        <result column="robot_num" property="robotNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+        <result column="task_name"  property="taskName" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    group_id, wx_group_id, wx_group_name, task_id, state, is_delete, create_time, modify_time,groups,group_type,group_name,
+    robot_num,last_buy_robot_num,last_del_robot_num,open_robot_wx_id,pause_time
+  </sql>
+
+    <select id="selectInfoByWxGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select  <include refid="Base_Column_List" /> from
+        t_group_info where wx_group_id = #{wxGroupId} and is_delete  = 0  and state != 3 and state != 4
+    </select>
+
+    <select id="selectListByTaskIds" resultMap="BaseResultMap">
+        select  <include refid="Base_Column_List" /> from
+        t_group_info
+        where task_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        and is_delete  = 0  and state = 1
+    </select>
+
+    <select id="selectByWxGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select  <include refid="Base_Column_List" /> from
+        t_group_info where wx_group_id = #{wxGroupId} and is_delete  = 0  and state = 1
+    </select>
+    <select id="selectListByGroupIds" resultType="com.uc.firegroup.api.pojo.GroupInfo">
+        select  <include refid="Base_Column_List" /> from
+        t_group_info
+        where wx_group_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        and is_delete  = 0  and state = 1
+    </select>
+
+    <select id="selectPageList" parameterType="com.uc.firegroup.api.request.GroupInfoRequest" resultMap="BaseResultMap">
+        select  <include refid="Base_Column_List" /> from
+        t_group_info where  is_delete  = 0 and task_id = #{taskId} and state != 4
+        <if test="state != null and state != ''">
+            and state = #{state}
+        </if>
+        <if test="wxGroupName != null and wxGroupName != ''">
+            and wx_group_name  LIKE CONCAT('%',#{wxGroupName},'%')
+        </if>
+        order by group_id desc limit ${(pageIndex-1)*pageSize},${pageSize}
+    </select>
+    <select id="selectPageListCount" parameterType="com.uc.firegroup.api.request.GroupInfoRequest" resultType="java.lang.Integer">
+        select  count(*) from
+        t_group_info where  is_delete  = 0 and task_id = #{taskId} and state != 4
+        <if test="state != null and state != ''">
+            and state = #{state}
+        </if>
+        <if test="wxGroupName != null and wxGroupName != ''">
+            and wx_group_name  LIKE CONCAT('%',#{wxGroupName},'%')
+        </if>
+    </select>
+
+    <select id="selectGroupAllByMerchant" parameterType="java.lang.String" resultMap="resultMap">
+        select  g.group_id,g.wx_group_id,g.wx_group_name,g.task_id,g.group_type,g.robot_num,t.task_name
+        from t_group_info g inner join t_task_info t on g.task_id = t.task_id where t.create_id = #{merchantId} and g.is_delete = 0 and t.is_delete = 0
+        ORDER BY g.group_id desc limit ${(pageIndex-1)*pageSize},${pageSize}
+    </select>
+    
+    
+    <select id="selectLikeGroupAllByMerchant" resultMap="resultMap">
+       SELECT
+			g.group_id,
+			g.wx_group_id,
+			g.wx_group_name,
+			g.task_id,
+			g.group_type,
+			g.robot_num,
+			t.task_name
+		FROM
+			t_group_info g
+		INNER JOIN t_task_info t ON g.task_id = t.task_id
+		WHERE
+			t.create_id = #{merchantId} and g.is_delete = 0 and t.is_delete = 0 and g.state = 1
+		  <if test="groupName != null and groupName != ''">
+            and g.wx_group_name LIKE CONCAT('%',#{groupName},'%')
+          </if>
+		   <if test="taskId != null">
+            and g.task_id=#{taskId}
+          </if>
+		ORDER BY
+			g.group_id DESC
+		LIMIT ${(pageIndex - 1)*pageSize }, ${pageSize}
+    </select>
+    
+    <select id="selectCountLikeGroupAllByMerchant" resultType="java.lang.Integer">
+       SELECT
+			count(*)
+		FROM
+			t_group_info g
+		INNER JOIN t_task_info t ON g.task_id = t.task_id
+		WHERE
+			t.create_id = #{merchantId} and g.is_delete = 0 and t.is_delete = 0 and g.state = 1
+		   <if test="groupName != null and groupName != ''">
+            and g.wx_group_name LIKE CONCAT('%',#{groupName},'%')
+          </if>
+		   <if test="taskId != null">
+            and g.task_id=#{taskId}
+          </if>
+    </select>
+    
+    
+
+    <select id="selectGroupCountByTaskId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select  count(*)
+        from t_group_info  where task_id = #{taskId} and is_delete = 0
+    </select>
+
+    <select id="selectGroupListByTaskId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select   <include refid="Base_Column_List" />
+        from t_group_info  where task_id = #{taskId} and is_delete = 0
+    </select>
+    <select id="selectListByWxGroupIds" resultMap="BaseResultMap">
+        select   <include refid="Base_Column_List" />
+        from t_group_info where wx_group_id in <foreach collection="list" open="(" close=")" separator="," item="item">#{item}</foreach>
+    </select>
+
+    <update id="updateRobotNum">
+        update t_group_info set robot_num = robot_num + #{num} where wx_group_id = #{wxGroupId}
+    </update>
+    <update id="updatePauseGroups">
+        update t_group_info set state = #{groupState},pause_time = #{pauseTime}
+        where group_id in <foreach collection="groupIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </update>
+
+    <select id="selectEnterpriseWxIds" resultType="java.lang.String">
+        select distinct wx_group_id from
+        t_group_info where state != 3 and  is_delete = 0 and group_type = 2 and state != 4
+    </select>
+    <select id="selectInitByWxGroupId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List" />
+        from t_group_info where wx_group_id = #{wxGroupId} and state = 4 and is_delete = 0  order by group_id desc limit 1
+    </select>
+    <select id="selectListByStates" resultType="com.uc.firegroup.api.pojo.GroupInfo">
+        select <include refid="Base_Column_List" />
+        from t_group_info
+        where is_delete = 0 and state in <foreach collection="list" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </select>
+</mapper>

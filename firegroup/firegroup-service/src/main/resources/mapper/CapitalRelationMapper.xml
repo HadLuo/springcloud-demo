@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.CapitalRelationMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.CapitalRelation">
+      <id column="capital_relation_id" property="capitalRelationId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="order_no" property="orderNo" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="wx_group_id" property="wxGroupId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="robot_num" property="robotNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="create_time" property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="is_delete" property="isDelete" javaType="Integer" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    capital_relation_id, order_no, wx_group_id, robot_num, create_time, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_capital_relation
+    where capital_relation_id = #{capitalRelationId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_capital_relation
+    where capital_relation_id = #{capitalRelationId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uc.firegroup.api.pojo.CapitalRelation">
+    insert into t_capital_relation (capital_relation_id, order_no, wx_group_id, 
+      robot_num, create_time, is_delete
+      )
+    values (#{capitalRelationId,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{wxGroupId,jdbcType=VARCHAR}, 
+      #{robotNum,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.uc.firegroup.api.pojo.CapitalRelation">
+    insert into t_capital_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="capitalRelationId != null">
+        capital_relation_id,
+      </if>
+      <if test="orderNo != null">
+        order_no,
+      </if>
+      <if test="wxGroupId != null">
+        wx_group_id,
+      </if>
+      <if test="robotNum != null">
+        robot_num,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="capitalRelationId != null">
+        #{capitalRelationId,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="wxGroupId != null">
+        #{wxGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="robotNum != null">
+        #{robotNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uc.firegroup.api.pojo.CapitalRelation">
+    update t_capital_relation
+    <set>
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="wxGroupId != null">
+        wx_group_id = #{wxGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="robotNum != null">
+        robot_num = #{robotNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=TINYINT},
+      </if>
+    </set>
+    where capital_relation_id = #{capitalRelationId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uc.firegroup.api.pojo.CapitalRelation">
+    update t_capital_relation
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      wx_group_id = #{wxGroupId,jdbcType=VARCHAR},
+      robot_num = #{robotNum,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=TINYINT}
+    where capital_relation_id = #{capitalRelationId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PlayGroupRelationMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PlayGroupRelation">
+      <id column="play_group_relation_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="play_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="wx_group_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="is_delete" javaType="Integer" jdbcType="TINYINT" />
+      <result column="state" javaType="Integer" jdbcType="TINYINT" />
+      <result column="fail_message" javaType="java.lang.String" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    play_group_relation_id, play_id, wx_group_id, create_time, is_delete, state, fail_message
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_play_group_relation
+    where play_group_relation_id = #{playGroupRelationId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_play_group_relation
+    where play_group_relation_id = #{playGroupRelationId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.uc.firegroup.api.pojo.PlayGroupRelation">
+    insert into t_play_group_relation (play_group_relation_id, play_id, wx_group_id, 
+      create_time, is_delete, state, 
+      fail_message)
+    values (#{playGroupRelationId,jdbcType=INTEGER}, #{playId,jdbcType=INTEGER}, #{wxGroupId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=TINYINT}, #{state,jdbcType=TINYINT}, 
+      #{failMessage,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.uc.firegroup.api.pojo.PlayGroupRelation">
+    insert into t_play_group_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="playGroupRelationId != null">
+        play_group_relation_id,
+      </if>
+      <if test="playId != null">
+        play_id,
+      </if>
+      <if test="wxGroupId != null">
+        wx_group_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="failMessage != null">
+        fail_message,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="playGroupRelationId != null">
+        #{playGroupRelationId,jdbcType=INTEGER},
+      </if>
+      <if test="playId != null">
+        #{playId,jdbcType=INTEGER},
+      </if>
+      <if test="wxGroupId != null">
+        #{wxGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=TINYINT},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="failMessage != null">
+        #{failMessage,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uc.firegroup.api.pojo.PlayGroupRelation">
+    update t_play_group_relation
+    <set>
+      <if test="playId != null">
+        play_id = #{playId,jdbcType=INTEGER},
+      </if>
+      <if test="wxGroupId != null">
+        wx_group_id = #{wxGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=TINYINT},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="failMessage != null">
+        fail_message = #{failMessage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where play_group_relation_id = #{playGroupRelationId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uc.firegroup.api.pojo.PlayGroupRelation">
+    update t_play_group_relation
+    set play_id = #{playId,jdbcType=INTEGER},
+      wx_group_id = #{wxGroupId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=TINYINT},
+      state = #{state,jdbcType=TINYINT},
+      fail_message = #{failMessage,jdbcType=VARCHAR}
+    where play_group_relation_id = #{playGroupRelationId,jdbcType=INTEGER}
+  </update>
+</mapper>

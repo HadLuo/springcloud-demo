@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.TaskInfoMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.TaskInfo">
+      <id column="task_id" property="taskId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="task_name"  property="taskName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="verification_code" property="verificationCode" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="create_id"  property="createId" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="create_name"  property="createName" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <result column="is_delete" property="isDelete" javaType="Integer" jdbcType="TINYINT" />
+      <result column="create_time"  property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="modify_time"  property="modifyTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="robot_num"  property="robotNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    task_id, task_name, verification_code, create_id, create_name, is_delete, create_time, 
+    modify_time,robot_num
+  </sql>
+  <select id="selectCodeByCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(*) from t_task_info where verification_code = #{verificationCode} and is_delete = 0
+  </select>
+
+  <select id="selectPageList" parameterType="com.uc.firegroup.api.request.TaskInfoRequest" resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_task_info where is_delete = 0
+    <if test="taskName != null and taskName != ''">
+      and task_name LIKE CONCAT('%',#{taskName},'%')
+    </if>
+    <if test="createId != null and createId != ''">
+      and create_id = #{createId}
+    </if>
+    order by task_id desc limit ${(pageIndex-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectPageListCount" parameterType="com.uc.firegroup.api.request.TaskInfoRequest" resultType="java.lang.Integer">
+    select   count(*)
+    from t_task_info where is_delete = 0
+    <if test="taskName != null and taskName != ''">
+      and task_name LIKE CONCAT('%',#{taskName},'%')
+    </if>
+    <if test="createId != null and createId != ''">
+      and create_id = #{createId}
+    </if>
+  </select>
+
+  <select id="selectAllList"  resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_task_info where is_delete = 0 and  create_id = #{createId}
+  </select>
+
+  <select id="queryAllList"  resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_task_info where is_delete = 0
+  </select>
+
+  <select id="selectByTaskId" parameterType="Integer" resultMap="BaseResultMap">
+    select     <include refid="Base_Column_List" />
+    from t_task_info where task_id = #{taskId}
+  </select>
+  <select id="selectByTaskIds" resultType="com.uc.firegroup.api.pojo.TaskInfo">
+    select     <include refid="Base_Column_List" />
+    from t_task_info where task_id in <foreach collection="list" open="(" close=")" separator="," item="item">#{item}</foreach>
+  </select>
+
+</mapper>

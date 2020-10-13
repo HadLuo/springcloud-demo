@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.FireGroupConfigMapper">
+  <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.FireGroupConfig">
+      <id column="config_id"  property="configId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="from_add_count" property="fromAddCount" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="add_days"  property="addDays" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="to_add_count" property="toAddCount" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="robot_friend_num"  property="robotFriendNum" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="robot_friend_count" property="robotFriendCount" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="friend_switch"  property="friendSwitch" javaType="java.lang.Integer" jdbcType="TINYINT" />
+      <result column="robot_group_count" property="robotGroupCount" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <result column="modify_time" property="modifyTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="create_time"  property="createTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="robot_day_money"  property="robotDayMoney" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <result column="robot_day_count"  property="robotDayCount" javaType="java.lang.Integer" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    config_id, from_add_count, add_days, to_add_count, robot_friend_num, robot_friend_count, friend_switch,robot_group_count,
+    modify_time, create_time,robot_day_money,robot_day_count
+  </sql>
+
+  <select id="selectFireGroupConfig" resultMap="BaseResultMap">
+    select * from t_fire_group_config where 1=1 order by config_id desc limit 1
+  </select>
+</mapper>

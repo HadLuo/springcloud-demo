@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uc.firegroup.service.mapper.PlayMessagePushMapper">
+    <resultMap id="BaseResultMap" type="com.uc.firegroup.api.pojo.PlayMessagePush">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="play_id" jdbcType="INTEGER" property="playId"/>
+        <result column="play_name" jdbcType="VARCHAR" property="playName"/>
+        <result column="play_type" jdbcType="TINYINT" property="playType"/>
+        <result column="merchat_id" jdbcType="VARCHAR" property="merchatId"/>
+        <result column="wx_group_id" jdbcType="VARCHAR" property="wxGroupId"/>
+        <result column="wx_group_name" jdbcType="VARCHAR" property="wxGroupName"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
+        <result column="trigger_keyword" jdbcType="VARCHAR" property="triggerKeyword"/>
+        <result column="robot_num" jdbcType="INTEGER" property="robotNum"/>
+        <result column="content_num" jdbcType="INTEGER" property="contentNum"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="push_state" jdbcType="TINYINT" property="pushState"/>
+        <result column="push_fail_reason" jdbcType="VARCHAR" property="pushFailReason"/>
+        <result column="push_time" jdbcType="TIMESTAMP" property="pushTime"/>
+        <result column="is_delete" jdbcType="TINYINT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, play_id, play_name,play_type,merchat_id,wx_group_id, wx_group_name, task_id, task_name,
+    trigger_keyword, robot_num, content_num, create_time, modify_time, push_state, push_fail_reason,
+    push_time, is_delete
+  </sql>
+
+    <insert id="batchInsert" parameterType="list" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into t_play_message_push (play_id, play_name,play_type,merchat_id,
+        wx_group_id, wx_group_name,
+        task_id, task_name,
+        robot_num, content_num,push_state,
+        push_time)
+        values
+        <foreach item="item" collection="list" separator=",">
+            (#{item.playId,jdbcType=INTEGER}, #{item.playName,jdbcType=VARCHAR},#{item.playType,jdbcType=TINYINT},#{item.merchatId,jdbcType=VARCHAR},
+            #{item.wxGroupId,jdbcType=VARCHAR}, #{item.wxGroupName,jdbcType=VARCHAR},
+            #{item.taskId,jdbcType=INTEGER}, #{item.taskName,jdbcType=VARCHAR},
+            #{item.robotNum,jdbcType=INTEGER}, #{item.contentNum,jdbcType=INTEGER},
+            #{item.pushState,jdbcType=TINYINT},#{item.pushTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+
+    <select id="selectGroupList" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_play_message_push
+        WHERE
+        play_id = #{0}
+        AND play_message_id = #{1} and is_delete = 0
+    </select>
+
+    <sql id="timingPushPageConditionSql">
+        <where>
+            and play_id = #{playId}
+            <if test="pushState != null">
+                and push_state = #{pushState}
+            </if>
+            <if test="groupName != null">
+                <bind name="groupNameLike" value="'%' + groupName + '%'"/>
+                and wx_group_name like #{groupNameLike}
+            </if>
+            and is_delete = 0
+        </where>
+    </sql>
+
+    <select id="findTimingPushPageList" resultType="com.uc.firegroup.api.pojo.PlayMessagePush">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_play_message_push
+        <include refid="timingPushPageConditionSql"/>
+        order by create_time desc
+        limit ${(page-1)*rows},${rows}
+    </select>
+    <select id="findTimingPushPageCount" resultType="int">
+        SELECT count(0)
+        FROM
+        t_play_message_push
+        <include refid="timingPushPageConditionSql"/>
+    </select>
+
+    <sql id="triggerPushPageConditionSql">
+        <where>
+            <if test="pushState != null">
+                and push_state = #{pushState}
+            </if>
+            <if test="groupName != null">
+                <bind name="groupNameLike" value="'%' + groupName + '%'"/>
+                and wx_group_name like #{groupNameLike}
+            </if>
+            <if test="taskName != null">
+                <bind name="taskNameLike" value="'%' + taskName + '%'"/>
+                and task_name like #{taskNameLike}
+            </if>
+            <if test="playName != null">
+                <bind name="playNameLike" value="'%' + playName + '%'"/>
+                and play_name like #{playNameLike}
+            </if>
+            <if test="startDate != null">
+                and push_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and push_time <![CDATA[<]]> DATE_ADD(#{endDate},INTERVAL 1 DAY)
+            </if>
+            and is_delete = 0 and merchat_id = #{createId} and play_type = 2
+        </where>
+    </sql>
+
+    <select id="findTriggerPushPageList" resultType="com.uc.firegroup.api.pojo.PlayMessagePush">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_play_message_push
+       <include refid="triggerPushPageConditionSql"/>
+        order by create_time desc
+        limit ${(page-1)*rows},${rows}
+    </select>
+    <select id="findTriggerPushPageCount" resultType="int">
+        SELECT count(0)
+        FROM
+        t_play_message_push
+        <include refid="triggerPushPageConditionSql"/>
+    </select>
+    
+    
+    <select id="selectOneByIds" resultMap="BaseResultMap">
+       SELECT
+			*
+		FROM
+			t_play_message_push
+		WHERE
+			play_id = #{playId}
+		AND wx_group_id = #{wxGroupId} and is_delete = 0 limit 1
+    </select>
+
+    <select id="findListByWxGroupIdAndPushDate" resultType="com.uc.firegroup.api.pojo.PlayMessagePush">
+        select <include refid="Base_Column_List"/>
+        from t_play_message_push
+        where wx_group_id = #{wxGroupId} and push_time >= #{startTime} and push_time <![CDATA[<]]> DATE_ADD(#{endTime},INTERVAL 1 DAY) and is_delete = 0
+    </select>
+    <select id="findWaitPushCountByWxGroupId" resultType="java.lang.Integer">
+        select count(0)
+        from t_play_message_push
+        where wx_group_id = #{wxGroupId} and push_state = 1 and is_delete = 0
+    </select>
+
+
+    <sql id="groupPushPageConditionSql">
+        <where>
+            <if test="pushState != null">
+                and push_state = #{pushState}
+            </if>
+            <if test="playName != null">
+                <bind name="playNameLike" value="'%' + playName + '%'"/>
+                and play_name like #{playNameLike}
+            </if>
+            <if test="pushStartTime != null">
+                and push_time >= #{pushStartTime}
+            </if>
+            <if test="pushEndTime != null">
+                and push_time <![CDATA[<]]> DATE_ADD(#{pushEndTime},INTERVAL 1 DAY)
+            </if>
+            and wx_group_id = #{wxGroupId} and is_delete = 0
+        </where>
+    </sql>
+    <select id="findGroupPlayPushPageCount" resultType="java.lang.Integer">
+        SELECT count(0)
+        FROM
+        t_play_message_push
+        <include refid="groupPushPageConditionSql"/>
+    </select>
+    <select id="findGroupPlayPushPageList" resultType="com.uc.firegroup.api.pojo.PlayMessagePush">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_play_message_push
+        <include refid="groupPushPageConditionSql"/>
+        order by create_time desc
+        limit ${(page-1)*rows},${rows}
+    </select>
+</mapper>
